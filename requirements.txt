@@ -1,0 +1,5 @@
+mapproxy
+pyproj
+numpy<1.22
+healpy
+numba
