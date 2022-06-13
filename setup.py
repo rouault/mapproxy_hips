@@ -12,12 +12,17 @@ install_requires = [
     'numba',
 ]
 
+readme = open('README.rst', encoding="utf-8").read()
+
 setup(
     name="mapproxy_hips",
-    version="0.1.0",
+    version="0.1.1alpha1",
     license="MIT",
     description="Plugin for MapProxy adding HIPS capabilities",
+    long_description=readme,
+    long_description_content_type='text/x-rst',
     author="Even Rouault",
+    author_email="even.rouault@spatialys.com",
     url="https://github.com/rouault/mapproxy_hips",
     packages=find_packages(),
     include_package_data=True,
@@ -27,6 +32,6 @@ setup(
     # the following makes a plugin available to mapproxy
     entry_points={"mapproxy": ["hips = mapproxy_hips.pluginmodule"]},
     # custom PyPI classifier for mapproxy plugins
-    classifiers=["Framework :: mapproxy"],
+    # classifiers=["Framework :: mapproxy"],
     zip_safe = False
 )
