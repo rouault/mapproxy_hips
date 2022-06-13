@@ -55,7 +55,7 @@ class TestHIPSSource(MySysTest):
                 #open('/tmp/tmp.png', 'wb').write(resp.body)
                 assert img.width == 256
                 assert img.height == 256
-                assert hashlib.md5(resp.body).hexdigest() in ('6d74a8e25ae071d39151a783c7132474', 'b57fe370becf5892b08e79ef2b1d2acb')
+                assert hashlib.md5(resp.body).hexdigest() in ('6d74a8e25ae071d39151a783c7132474', 'b57fe370becf5892b08e79ef2b1d2acb', '84a8f9bd4f2c3488ed33c16f9f0e6ae2')
 
 
     def test_1_0_0(self, app):
@@ -79,4 +79,4 @@ class TestHIPSSource(MySysTest):
                 # open('/tmp/tmp.png', 'wb').write(resp.body)
                 assert img.width == 256
                 assert img.height == 256
-                assert hashlib.md5(resp.body).hexdigest() in ('bd3dff3ccb40f9cb3edabf60c23bc86f', 'b57fe370becf5892b08e79ef2b1d2acb')
+                assert hashlib.md5(resp.body).hexdigest() in ('bd3dff3ccb40f9cb3edabf60c23bc86f', 'b57fe370becf5892b08e79ef2b1d2acb', 'a0c574b92f8b2dfd41f23507615cede5')

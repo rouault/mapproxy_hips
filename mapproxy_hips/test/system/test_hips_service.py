@@ -168,7 +168,7 @@ class TestHIPSService(MySysTest):
                 img = Image.open(BytesIO(resp.body))
                 assert img.width == 512
                 assert img.height == 512
-                assert hashlib.md5(resp.body).hexdigest() in ('e5893f926c84fb46ff1ef0fddf37b19d', 'e5893f926c84fb46ff1ef0fddf37b19d', '83db47dc57b237f47d1b3a81bb910e00')
+                assert hashlib.md5(resp.body).hexdigest() in ('e5893f926c84fb46ff1ef0fddf37b19d', 'e5893f926c84fb46ff1ef0fddf37b19d', '83db47dc57b237f47d1b3a81bb910e00', 'b1825835f83dda08e4e84e1ccd7a66e1')
 
 
     def test_valid_norder1_npix16(self, app):
@@ -185,7 +185,7 @@ class TestHIPSService(MySysTest):
                 img = Image.open(BytesIO(resp.body))
                 assert img.width == 512
                 assert img.height == 512
-                assert hashlib.md5(resp.body).hexdigest() in ('e5893f926c84fb46ff1ef0fddf37b19d', 'e5893f926c84fb46ff1ef0fddf37b19d', '83db47dc57b237f47d1b3a81bb910e00')
+                assert hashlib.md5(resp.body).hexdigest() in ('e5893f926c84fb46ff1ef0fddf37b19d', 'e5893f926c84fb46ff1ef0fddf37b19d', '83db47dc57b237f47d1b3a81bb910e00', 'b1825835f83dda08e4e84e1ccd7a66e1')
 
 
 class TestHIPSServiceResamplingBilinear(MySysTest):
@@ -209,7 +209,7 @@ class TestHIPSServiceResamplingBilinear(MySysTest):
                 img = Image.open(BytesIO(resp.body))
                 assert img.width == 512
                 assert img.height == 512
-                assert hashlib.md5(resp.body).hexdigest() in ('e5893f926c84fb46ff1ef0fddf37b19d', 'e5893f926c84fb46ff1ef0fddf37b19d', '83db47dc57b237f47d1b3a81bb910e00')
+                assert hashlib.md5(resp.body).hexdigest() in ('e5893f926c84fb46ff1ef0fddf37b19d', 'e5893f926c84fb46ff1ef0fddf37b19d', '83db47dc57b237f47d1b3a81bb910e00', 'b1825835f83dda08e4e84e1ccd7a66e1')
 
 
 class TestHIPSServiceResamplingBicubic(MySysTest):
@@ -233,7 +233,7 @@ class TestHIPSServiceResamplingBicubic(MySysTest):
                 img = Image.open(BytesIO(resp.body))
                 assert img.width == 512
                 assert img.height == 512
-                assert hashlib.md5(resp.body).hexdigest() in ('e5893f926c84fb46ff1ef0fddf37b19d', 'e5893f926c84fb46ff1ef0fddf37b19d', '83db47dc57b237f47d1b3a81bb910e00')
+                assert hashlib.md5(resp.body).hexdigest() in ('e5893f926c84fb46ff1ef0fddf37b19d', 'e5893f926c84fb46ff1ef0fddf37b19d', '83db47dc57b237f47d1b3a81bb910e00', 'b1825835f83dda08e4e84e1ccd7a66e1')
 
 
 class TestHIPSServiceCustomProperties(MySysTest):

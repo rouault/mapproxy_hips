@@ -1,0 +1,49 @@
+name: Running mapproxy-hips tests
+
+on:
+  workflow_dispatch:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        python-version: [3.8]
+
+    steps:
+    - name: Install packages
+      run: |
+        sudo apt update
+        sudo apt install proj-bin libgeos-dev libgdal-dev libxslt1-dev libxml2-dev build-essential python-dev libjpeg-dev zlib1g-dev libfreetype6-dev protobuf-compiler libprotoc-dev -y
+
+    - name: Checkout sources
+      uses: actions/checkout@v2
+
+    - name: Use python ${{ matrix.python-version }}
+      uses: actions/setup-python@v2
+      with:
+        python-version: ${{ matrix.python-version }}
+
+    - name: Cache python deps 💾
+      uses: actions/cache@v2
+      with:
+        path: ~/.cache/pip
+        key: ${{ runner.OS }}-python-${{ hashFiles('**/requirements-tests.txt') }}
+        restore-keys: |
+          ${{ runner.OS }}-python-
+          ${{ runner.OS }}-
+
+    - name: Install dependencies ⏬
+      run: |
+        pip install git+https://github.com/mapproxy/mapproxy
+        if [[ ${{ matrix.python-version }} = 3.8 ]]; then pip install -U "Pillow!=8.3.0,!=8.3.1"; fi
+        pip install pytest WebTest
+        pip install -e .
+
+    - name: Run tests 🏗️
+      run: |
+        export LD_PRELOAD=/lib/x86_64-linux-gnu/libstdc++.so.6:$LD_PRELOAD
+        pytest mapproxy_hips
