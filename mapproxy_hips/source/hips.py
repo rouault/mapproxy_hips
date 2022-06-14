@@ -104,8 +104,11 @@ class HIPSSource(MapLayer):
         resx = (query.bbox[2] - query.bbox[0]) / query.size[0]
         resy = (query.bbox[3] - query.bbox[1]) / query.size[1]
 
-        srs_4326 = SRS(4326)
-        if srs_4326 != query.srs:
+        if hasattr(query.srs, 'get_geographic_srs'):
+            geog_srs = query.srs.get_geographic_srs()
+        else:
+            geog_srs = SRS(4326)
+        if geog_srs != query.srs:
 
             def get_area(xy_ar):
                 return 0.5 * abs(sum(xy_ar[i][0] * (xy_ar[(i+1) % len(xy_ar)][1] - xy_ar[i-1][1]) for i in range(len(xy_ar))))
@@ -113,7 +116,7 @@ class HIPSSource(MapLayer):
                 def point(i,j):
                     return (query.bbox[0] + resx * (I + i),
                             query.bbox[1] + resy * (J + j))
-                local_lonlat = query.srs.transform_to(srs_4326,
+                local_lonlat = query.srs.transform_to(geog_srs,
                     [point(0,0),point(0,1),point(1,1),point(1,0)])
                 local_lonlat = [xy for xy in local_lonlat]
                 local_lon = [xy[0] for xy in local_lonlat]
@@ -135,7 +138,7 @@ class HIPSSource(MapLayer):
                     num_res += 1
             res = sum_res / num_res
 
-            lonlat = query.srs.transform_to(srs_4326,
+            lonlat = query.srs.transform_to(geog_srs,
                 [(query.bbox[0] + (i + 0.5) * resx,
                   query.bbox[3] - (j + 0.5) * resy) for j in range(query.size[1]) for i in range(query.size[0])])
             lon = []

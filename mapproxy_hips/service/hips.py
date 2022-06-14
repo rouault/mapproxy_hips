@@ -429,13 +429,26 @@ class HIPSServer(Server):
 
     def _generate_hips_tile(self, layer_name, norder, npix, hips_shift):
 
-        # Unused for now
-        grid = tile_grid(srs = 'EPSG:4326', bbox = [-180,-90,180,90])
+        request_srs = None
         for layer, layer_obj_iter in self.tile_layers.iteritems():
             if layer_obj_iter.name == layer_name:
-                grid = layer_obj_iter.grid
+                request_srs = layer_obj_iter.grid.srs
                 break
-        grid #noqa
+
+        if request_srs is None:
+            layer = self.layers[layer_name]
+            from mapproxy.service.wms import  WMSLayer
+            if isinstance(layer, WMSLayer):
+                for source_layer in layer.map_layers:
+                    from mapproxy.source.wms import WMSSource
+                    if isinstance(source_layer, WMSSource):
+                        for srs in source_layer.supported_srs:
+                            if hasattr(srs, 'get_geographic_srs'):
+                                request_srs = srs.get_geographic_srs()
+                                break
+
+        if request_srs is None:
+            request_srs = SRS('EPSG:4326')
 
         tile_size = 1 << hips_shift
 
@@ -503,7 +516,7 @@ class HIPSServer(Server):
             src_width = int(tile_size * oversampling_ratio)
             src_height = int(tile_size * oversampling_ratio)
             src_bbox = [min_lon, min_lat, max_lon, max_lat]
-            source_image = self._get_source_image(layer_name, 'EPSG:4326', src_bbox, src_width, src_height)
+            source_image = self._get_source_image(layer_name, request_srs.srs_code, src_bbox, src_width, src_height)
 
             """
             img_opts = ImageOptions(format = 'png')
@@ -533,10 +546,10 @@ class HIPSServer(Server):
             src_height = int(tile_size * oversampling_ratio)
 
             src_bbox = [left_lon, min_lat, 180, max_lat]
-            source_image_left = self._get_source_image(layer_name, 'EPSG:4326', src_bbox, src_width_left, src_height)
+            source_image_left = self._get_source_image(layer_name, request_srs.srs_code, src_bbox, src_width_left, src_height)
 
             src_bbox = [-180, min_lat, right_lon, max_lat]
-            source_image_right = self._get_source_image(layer_name, 'EPSG:4326', src_bbox, src_width_right, src_height)
+            source_image_right = self._get_source_image(layer_name, request_srs.srs_code, src_bbox, src_width_right, src_height)
 
             source_image = np.concatenate((source_image_left, source_image_right), axis=1)
 
