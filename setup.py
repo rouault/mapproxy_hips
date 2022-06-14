@@ -16,6 +16,7 @@ readme = open('README.rst', encoding="utf-8").read()
 
 setup(
     name="mapproxy_hips",
+    python_requires='>=3.7',
     version="0.1.1alpha1",
     license="MIT",
     description="Plugin for MapProxy adding HIPS capabilities",
