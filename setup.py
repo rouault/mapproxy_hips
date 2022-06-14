@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'mapproxy>=1.14',
+    'mapproxy>=1.15',
     'pyproj',
     'numpy<1.22',
     'healpy',

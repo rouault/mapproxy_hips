@@ -1,4 +1,4 @@
-mapproxy
+mapproxy>=1.15
 pyproj
 numpy<1.22
 healpy

@@ -1,12 +1,12 @@
 mapproxy-hips
 *************
 
-mapproxy-hips is a plugin for MapProxy (https://mapproxy.org/) providing extensions
+mapproxy-hips is a plugin for MapProxy (http://mapproxy.github.io/mapproxy/) providing extensions
 for interoperability between OGC services (WMS, WMTS, ...) and the HiPS protocol
 (https://www.ivoa.net/documents/HiPS/) from IVOA.
 
-The plugin requires a mapproxy version from master repository (more recent than
-2022-06-13) which incorporates the plugin architecture used by mapproxy-hips.
+The plugin requires MapProxy >= 1.15 which incorporates the plugin architecture
+(http://mapproxy.github.io/mapproxy/plugins.html) used by mapproxy-hips.
 
 Quickstart
 ----------
@@ -15,7 +15,6 @@ Quickstart
 
     python3 -m venv myvenv
     source myvenv/bin/activate
-    pip install git+https://github.com/mapproxy/mapproxy
     pip install git+https://github.com/rouault/mapproxy_hips
 
     git clone https://github.com/rouault/mapproxy_hips
