@@ -121,4 +121,5 @@ for a full example.
 Credits
 -------
 
-Funded by Centre National d'Etudes Spatiales (CNES): https://cnes.fr
+Funded by Centre National d'Etudes Spatiales (CNES, https://cnes.fr) within the
+framework of the "Pôle de Données et Services Surfaces Planétaires" (PDSSP) project.
