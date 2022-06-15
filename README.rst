@@ -15,7 +15,7 @@ Quickstart
 
     python3 -m venv myvenv
     source myvenv/bin/activate
-    pip install git+https://github.com/rouault/mapproxy_hips
+    pip install mapproxy_hips
 
     git clone https://github.com/rouault/mapproxy_hips
     mapproxy-util serve-develop mapproxy_hips/hips_examples/ogc_as_hips/mapproxy.yaml &

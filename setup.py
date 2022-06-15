@@ -17,7 +17,7 @@ readme = open('README.rst', encoding="utf-8").read()
 setup(
     name="mapproxy_hips",
     python_requires='>=3.7',
-    version="0.1.1alpha1",
+    version="0.2.0",
     license="MIT",
     description="Plugin for MapProxy adding HIPS capabilities",
     long_description=readme,
@@ -33,6 +33,17 @@ setup(
     # the following makes a plugin available to mapproxy
     entry_points={"mapproxy": ["hips = mapproxy_hips.pluginmodule"]},
     # custom PyPI classifier for mapproxy plugins
-    # classifiers=["Framework :: mapproxy"],
+    classifiers=[
+        "Operating System :: OS Independent",
+        "Programming Language :: Python :: 2.7",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Topic :: Internet :: Proxy Servers",
+        "Topic :: Internet :: WWW/HTTP :: WSGI",
+        "Topic :: Scientific/Engineering :: GIS",
+    ],
     zip_safe = False
 )
