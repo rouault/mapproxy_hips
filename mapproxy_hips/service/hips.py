@@ -9,7 +9,6 @@ from PIL import Image
 from mapproxy.cache.base import TileLocker
 from mapproxy.cache.file import FileCache
 from mapproxy.cache.tile import Tile
-from mapproxy.grid import tile_grid
 from mapproxy.layer import MapQuery
 from mapproxy.request.wms import WMSMapRequest, WMSMapRequestParams
 from mapproxy.response import Response
