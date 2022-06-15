@@ -24,7 +24,10 @@ def extra_demo_substitution_handler(demo_server, req, substitutions):
     if 'hips' in demo_server.services:
         hips_layer_names = []
         for layer_name, layer in demo_server.layers.items():
-            enabled = layer.md.get('hips', {}).get('enabled', True)
+            hips_md = layer.md.get('hips', None)
+            if hips_md is None:
+                hips_md = {}
+            enabled = hips_md.get('enabled', True)
             if enabled:
                 _, _, _, allsky_available, _ = _hips_info(req, layer_name)
                 hips_layer_names.append([layer_name, allsky_available])
@@ -57,7 +60,7 @@ def _hips_info(req, layer_name):
         value = properties['hips_tile_format']
         for x in value.split(' '):
             if x in ('jpeg', 'png'):
-                tile_format = x
+                tile_format = 'png' if x == 'png' else 'jpg'
                 break
         if tile_format is None:
             return Exception(f'hips_tile_format = {value} does not contain jpeg or png')

@@ -47,6 +47,23 @@ layers:
             # hips_tile_width: 512
             # hips_order: 5
 
+
+  # To illustrate HIPS passthrough mode
+  - name: mars_hips_direct
+    title: MARS
+    sources: [mars_hips_source]
+    md:
+        hips:
+            # Wen set to true (the default), all HIPS requests are directly
+            # redirected to the HIPS source if the layer is a HIPS source.
+            # Can be set to false to do HIPS -> geodetic -> HIPS, but much slower
+            # passthrough: true
+
+            # Wen set to true (the default), the /properties HIPS request is directly
+            # redirected to the HIPS source if the layer is a HIPS source.
+            # Can be set to false so that MapProxy create is own /properties response
+            # passthrough_properties: true
+
 caches:
   mars_tiled_geodetic:
     grids: [geodetic]
@@ -59,6 +76,15 @@ sources:
     req:
       url: https://planetarymaps.usgs.gov/cgi-bin/mapserv?map=/maps/mars/mars_simp_cyl.map&
       layers: MOLA_color
+
+  # To illustrate HIPS passthrough mode
+  mars_hips_source:
+    type: hips
+    image:
+      format: image/jpeg
+    resampling_method: bilinear
+    url: http://alasky.u-strasbg.fr/Planets/Mars_MOLA
+    # cache_hips_tiles: false
 
 grids:
     geodetic:

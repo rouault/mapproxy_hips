@@ -147,11 +147,17 @@ class HIPSServer(Server):
             assert False, self.resampling_method
 
 
+    def _get_hips_md(self, layer_name):
+        hips_md = self.layers[layer_name].md.get('hips', None)
+        if hips_md is None:
+            hips_md = {}
+        return hips_md
+
+
     def _get_hips_shift(self, layer_name):
         """ Return the HIPS shift (log2(tile_width)) for the requested layer """
 
-        hips_md = self.layers[layer_name].md.get('hips', {})
-        hips_tile_width = int(hips_md.get('hips_tile_width', 1 << self.hips_shift))
+        hips_tile_width = int(self._get_hips_md(layer_name).get('hips_tile_width', 1 << self.hips_shift))
         hips_shift = math.log2(hips_tile_width)
         if hips_shift != int(hips_shift):
             raise Exception(f'Invalid hips_tile_width={hips_tile_width} for layer {layer_name}')
@@ -161,16 +167,34 @@ class HIPSServer(Server):
     def _get_hips_tile_format(self, layer_name):
         """ Return the value of the hips_tile_format property of the /properties file """
 
-        hips_md = self.layers[layer_name].md.get('hips', {})
-        return hips_md.get('hips_tile_format', 'png jpeg')
+        return self._get_hips_md(layer_name).get('hips_tile_format', 'png jpeg')
+
+
+    def _get_hips_source(self, layer_name):
+        """ Return a HIPSSource object if layer_name matches a HIPS source, or None """
+
+        if self._get_hips_md(layer_name).get('passthrough', True):
+            from mapproxy.service.wms import  WMSLayer
+            layer = self.layers[layer_name]
+            if isinstance(layer, WMSLayer):
+                for source_layer in layer.map_layers:
+                    from mapproxy_hips.source.hips import HIPSSource
+                    if isinstance(source_layer, HIPSSource):
+                        return source_layer
+
+        return None
 
 
     def handleProperties(self, layer_name):
         """ Handle a request for the /properties file """
 
+        hips_source = self._get_hips_source(layer_name)
+        if hips_source and self._get_hips_md(layer_name).get('passthrough_properties', True):
+            return hips_source.load_properties()
+
         from datetime import datetime
 
-        hips_md = self.layers[layer_name].md.get('hips', {})
+        hips_md = self._get_hips_md(layer_name)
 
         # Required properties
         properties = {
@@ -189,7 +213,7 @@ class HIPSServer(Server):
 
         # Add other keys from metadata
         for key in hips_md:
-            if key not in properties:
+            if key not in properties and key != 'passthrough':
                 properties[key] = hips_md[key]
 
         # Format response as key=value pair lines
@@ -202,6 +226,10 @@ class HIPSServer(Server):
 
     def handleAllSky(self, req, layer_name, norder_arg, allskyFilename):
         """ Handle a request for a Allsky preview file """
+
+        hips_source = self._get_hips_source(layer_name)
+        if hips_source:
+            return hips_source.load_allsky(req, norder_arg[len("Norder"):])
 
         cache_dir = os.path.join(self.cache_dir, layer_name, norder_arg)
         cache_filename = os.path.join(cache_dir, allskyFilename)
@@ -224,7 +252,7 @@ class HIPSServer(Server):
         if layer_name not in self.layers:
             return Response(f'Unhandled layer name {layer_name}', content_type='text/plain', status=404)
 
-        enabled = self.layers[layer_name].md.get('hips', {}).get('enabled', True)
+        enabled = self._get_hips_md(layer_name).get('enabled', True)
         if not enabled:
             return Response(f'HIPS not enabled for layer {layer_name}', content_type='text/plain', status=404)
 
@@ -428,6 +456,10 @@ class HIPSServer(Server):
 
 
     def _generate_hips_tile(self, layer_name, norder, npix, hips_shift):
+
+        hips_source = self._get_hips_source(layer_name)
+        if hips_source:
+            return hips_source.load_hips_tile(norder, npix)
 
         request_srs = None
         for layer, layer_obj_iter in self.tile_layers.iteritems():

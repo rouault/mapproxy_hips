@@ -96,6 +96,70 @@ class HIPSSource(MapLayer):
         self.hips_shift = int(self.hips_shift)
 
 
+    def load_properties(self):
+
+        """ Load /properties. Only used from mapproxy_hips.service.hips, in passthrough mode """
+
+        from mapproxy.response import Response
+
+        resp = self.http_client.open(self.url + "/properties")
+        return Response(resp.read(), content_type='text/plain', status=200)
+
+
+
+    def load_allsky(self, req, hips_tile_order):
+
+        """ Load a allsky file. Only used from mapproxy_hips.service.hips, in passthrough mode """
+
+        from mapproxy.response import Response
+        from mapproxy.image.opts import ImageOptions
+
+        self._load_properties()
+        hips_image_ext = 'jpg' if self.hips_tile_format == 'jpeg' else 'png'
+        img_opts = ImageOptions(format = self.hips_tile_format)
+        content_type = img_opts.format.mime_type
+
+        if req.environ['REQUEST_METHOD'] == 'HEAD':
+            return Response(None, status=200, content_type=content_type)
+
+        url = self.url + f"/Norder{hips_tile_order}/Allsky.{hips_image_ext}"
+        log_hips.info(f"Loading {url}")
+        img = self.http_client.open_image(url)
+        return Response(img.as_buffer(), content_type=content_type)
+
+
+    def load_hips_tile(self, hips_tile_order, hips_tile):
+        """ Download a hips tile or get it from cache """
+
+        cached_tile = False
+        if self.cache:
+            from mapproxy.cache.tile import Tile
+            tile = Tile([hips_tile_order, hips_tile, 0])
+            with self.locker.lock(tile):
+                if self.cache.is_cached(tile):
+                    if self.cache.load_tile(tile):
+                        img = tile.source_image()
+                        if img:
+                            cached_tile = True
+                            return np.array(img)
+
+        if not cached_tile:
+            req_dir = hips_tile // 10000 * 10000
+            self._load_properties()
+            hips_image_ext = 'jpg' if self.hips_tile_format == 'jpeg' else 'png'
+            url = self.url + f"/Norder{hips_tile_order}/Dir{req_dir}/Npix{hips_tile}.{hips_image_ext}"
+            try:
+                img = self.http_client.open_image(url)
+                if self.cache:
+                    with self.locker.lock(tile):
+                        tile.source = img
+                        self.cache.store_tile(tile)
+                return np.array(img.as_image())
+            except HTTPClientError as e:
+                log_hips.warning('could not retrieve tile: %s', e)
+
+        return None
+
     def get_map(self, query):
         # print("get_map()", query.bbox, query.size, query.srs)
 
@@ -168,8 +232,6 @@ class HIPSSource(MapLayer):
         # Set -1 as pixel number for invalid latitudes
         pixels = np.array([ pixels_filtered[x] if lat[x] == lat_clamped[x] else -1 for x in range(len(pixels_filtered)) ], dtype=np.int64)
 
-        hips_image_ext = 'jpg' if self.hips_tile_format == 'jpeg' else 'png'
-
         if has_numba:
             # Numba cannot take a untyped dict for an input parameter, so
             # we have to specify the key and value types
@@ -194,33 +256,10 @@ class HIPSSource(MapLayer):
         for hips_tile in hips_tiles:
 
             map_tile_coord_shift[hips_tile] = np.array([0, 0], np.int32)
-            cached_tile = False
-            if self.cache:
-                from mapproxy.cache.tile import Tile
-                tile = Tile([hips_tile_order, hips_tile, 0])
-                with self.locker.lock(tile):
-                    if self.cache.is_cached(tile):
-                        if self.cache.load_tile(tile):
-                            img = tile.source_image()
-                            if img:
-                                cached_tile = True
-                                map_tiles[hips_tile] = np.array(img)
 
-            if not cached_tile:
-                req_dir = hips_tile // 10000 * 10000
-                url = self.url + f"/Norder{hips_tile_order}/Dir{req_dir}/Npix{hips_tile}.{hips_image_ext}"
-                try:
-                    img = self.http_client.open_image(url)
-                    map_tiles[hips_tile] = np.array(img.as_image())
-                    if self.cache:
-                        with self.locker.lock(tile):
-                            tile.source = img
-                            self.cache.store_tile(tile)
-                except HTTPClientError as e:
-                    log_hips.warning('could not retrieve tile: %s', e)
-
-            if hips_tile in map_tiles:
-                tile = map_tiles[hips_tile]
+            tile = self.load_hips_tile(hips_tile_order, hips_tile)
+            if tile is not None:
+                map_tiles[hips_tile] = tile
                 if tile.shape[0] != 1 << self.hips_shift or tile.shape[1] != 1 << self.hips_shift:
                     tiles_of_expected_dimension = False
                     log_hips.warning('tile %d,%d has not expected shape', hips_tile_order, hips_tile)
