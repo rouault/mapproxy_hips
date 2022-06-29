@@ -174,6 +174,9 @@ class HIPSSource(MapLayer):
             geog_srs = SRS(4326)
         if geog_srs != query.srs:
 
+            is_north_west_geog_srs = geog_srs.proj.axis_info[0].direction == 'north' and \
+                                     geog_srs.proj.axis_info[1].direction == 'west'
+
             def get_area(xy_ar):
                 return 0.5 * abs(sum(xy_ar[i][0] * (xy_ar[(i+1) % len(xy_ar)][1] - xy_ar[i-1][1]) for i in range(len(xy_ar))))
             def res_at(I,J):
@@ -182,6 +185,8 @@ class HIPSSource(MapLayer):
                             query.bbox[1] + resy * (J + j))
                 local_lonlat = query.srs.transform_to(geog_srs,
                     [point(0,0),point(0,1),point(1,1),point(1,0)])
+                if is_north_west_geog_srs:
+                    local_lonlat = [(-xy[1], xy[0]) for xy in local_lonlat]
                 local_lonlat = [xy for xy in local_lonlat]
                 local_lon = [xy[0] for xy in local_lonlat]
                 if max(local_lon) - min(local_lon) > 180:
@@ -207,9 +212,14 @@ class HIPSSource(MapLayer):
                   query.bbox[3] - (j + 0.5) * resy) for j in range(query.size[1]) for i in range(query.size[0])])
             lon = []
             lat = []
-            for x in lonlat:
-                lon.append(x[0])
-                lat.append(x[1])
+            if is_north_west_geog_srs:
+                for x in lonlat:
+                    lon.append(-x[1])
+                    lat.append(x[0])
+            else:
+                for x in lonlat:
+                    lon.append(x[0])
+                    lat.append(x[1])
         else:
             lon = [ query.bbox[0] + (i + 0.5) * resx for j in range(query.size[1]) for i in range(query.size[0]) ]
             lat = [ query.bbox[3] - (j + 0.5) * resy for j in range(query.size[1]) for i in range(query.size[0]) ]
