@@ -15,6 +15,7 @@ Quickstart
 
     python3 -m venv myvenv
     source myvenv/bin/activate
+    pip install git+https://github.com/mapproxy/mapproxy.git # to install MapProxy > 1.15, to be able to use IAU CRS codes
     pip install mapproxy_hips
 
     git clone https://github.com/rouault/mapproxy_hips

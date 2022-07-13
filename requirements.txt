@@ -1,4 +1,5 @@
-mapproxy>=1.15
+#mapproxy>=1.15
+mapproxy @ git+https://github.com/mapproxy/mapproxy.git#egg=mapproxy
 pyproj
 numpy<1.22
 healpy
