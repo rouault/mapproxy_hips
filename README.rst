@@ -5,8 +5,7 @@ mapproxy-hips is a plugin for MapProxy (http://mapproxy.github.io/mapproxy/) pro
 for interoperability between OGC services (WMS, WMTS, ...) and the HiPS protocol
 (https://www.ivoa.net/documents/HiPS/) from IVOA.
 
-The plugin requires MapProxy >= 1.15 which incorporates the plugin architecture
-(http://mapproxy.github.io/mapproxy/plugins.html) used by mapproxy-hips.
+The plugin requires MapProxy >= 6.0.1.
 
 Quickstart
 ----------
@@ -15,7 +14,7 @@ Quickstart
 
     python3 -m venv myvenv
     source myvenv/bin/activate
-    pip install git+https://github.com/mapproxy/mapproxy.git # to install MapProxy > 1.15, to be able to use IAU CRS codes
+    pip install mapproxy
     pip install mapproxy_hips
 
     git clone https://github.com/rouault/mapproxy_hips

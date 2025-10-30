@@ -5,9 +5,9 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'mapproxy>=1.15',
+    'mapproxy>=6.0.1',
     'pyproj',
-    'numpy<1.22',
+    'numpy',
     'healpy',
     'numba',
 ]

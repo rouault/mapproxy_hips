@@ -2,7 +2,11 @@
 # Copyright (C) 2021-2022 Spatialys
 # Funded by Centre National d'Etudes Spatiales (CNES): https://cnes.fr
 
-import pkg_resources
+try:
+    import importlib_resources
+except ImportError:
+    from importlib import resources as importlib_resources
+
 from mapproxy.service.demo import get_template as mapproxy_get_template
 from mapproxy.template import template_loader
 
@@ -92,7 +96,7 @@ def _render_hips_layer_template(req):
     if not allsky_available:
         allsky_msg = f'<p><b>WARNING</b>: {allsky_file} does not exist. It should be pregenerated with "mapproxy-util hips-allsky -f path_to_mapproxy.yaml -l {hips_layer} -o 3 -c $(nproc)"</p>'
 
-    template_filename = pkg_resources.resource_filename(__name__, 'templates/demo/hips_demo.html')
+    template_filename = importlib_resources.files(__name__).joinpath('templates/demo/hips_demo.html')
     # We use mapproxy_get_template() and not mapproxy_hips_get_template()
     # because demo/static.html is a resource of mapproxy, and not mapproxy_hips
     template = mapproxy_get_template(template_filename, default_inherit="demo/static.html")

@@ -1,6 +1,5 @@
-#mapproxy>=1.15
-mapproxy @ git+https://github.com/mapproxy/mapproxy.git#egg=mapproxy
+mapproxy>=6.0.1
 pyproj
-numpy<1.22
+numpy
 healpy
 numba
