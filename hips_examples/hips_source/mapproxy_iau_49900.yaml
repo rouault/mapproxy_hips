@@ -22,22 +22,25 @@ services:
       use_grid_names: true
   wmts:
   wms:
-    srs: ['IAU:49900', 'IAU:49931']
+    srs: ['IAU_2015:49900', 'IAU_2015:49931']
     md:
       title: MapProxy WMS Proxy
       abstract: This is a minimal MapProxy example.
+  ogcapi:
+    map_srs: ['IAU_2015:49900', 'IAU_2015:49931']
+    default_dataset_layers: [mars_hips]
 
 layers:
   - name: mars_hips
-    title: MARS
+    title: MARS (cache)
     sources: [mars_hips_cache]
 
   - name: mars_hips_north_polar
-    title: MARS
+    title: MARS (north polar)
     sources: [mars_hips_cache_north_polar]
 
   - name: mars_hips_direct
-    title: MARS
+    title: MARS (direct)
     sources: [mars_hips_source]
 
 caches:
@@ -63,11 +66,11 @@ grids:
         origin: nw
         base: GLOBAL_GEODETIC
         bbox: [-180,-90,180,90]
-        srs: IAU:49900
+        srs: IAU_2015:49900
 
     north_polar:
         origin: nw
-        srs: IAU:49931
+        srs: IAU_2015:49931
         bbox: [-4000000, -4000000, 4000000, 4000000]
         min_res: 31250
         res_factor: 2

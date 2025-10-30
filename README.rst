@@ -2,7 +2,7 @@ mapproxy-hips
 *************
 
 mapproxy-hips is a plugin for MapProxy (http://mapproxy.github.io/mapproxy/) providing extensions
-for interoperability between OGC services (WMS, WMTS, ...) and the HiPS protocol
+for interoperability between OGC services (WMS, WMTS, OGCAPI ...) and the HiPS protocol
 (https://www.ivoa.net/documents/HiPS/) from IVOA.
 
 The plugin requires MapProxy >= 6.0.1.
@@ -117,6 +117,9 @@ of the HIPS service.
 
 See https://github.com/rouault/mapproxy_hips/blob/master/hips_examples/hips_source/mapproxy.yaml
 for a full example.
+
+And https://github.com/rouault/mapproxy_hips/blob/master/hips_examples/hips_source/mapproxy_iau_49900.yaml
+for an example involving IAU CRS.
 
 Credits
 -------
