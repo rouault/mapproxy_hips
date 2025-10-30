@@ -121,6 +121,55 @@ for a full example.
 And https://github.com/rouault/mapproxy_hips/blob/master/hips_examples/hips_source/mapproxy_iau_49900.yaml
 for an example involving IAU CRS.
 
+OpenTelemetry
+-------------
+
+The plugin has an `OpenTelemetry <https://opentelemetry-python.readthedocs.io>`__ integation.
+It is enabled when the ``OTEL_EXPORTER_OTLP_ENDPOINT`` environment is set,
+e.g. to ``http://localhost:4317``.
+
+The ``OTEL_SERVICE_NAME`` environment variable is set by default to ``mapproxy.hips``,
+and can be overriden by the user before starting MapProxy.
+
+Other environment variables can be set as detailed in
+https://opentelemetry-python.readthedocs.io/en/latest/sdk/environment_variables.html
+
+OpenTelemetry good working can be checked with the following procedure:
+
+Given a ``otel-collector-config.yaml`` file containing
+
+.. code-block:: yaml
+
+    receivers:
+      otlp:
+        protocols:
+          http:
+            endpoint: 0.0.0.0:4317
+    exporters:
+      debug:
+        verbosity: detailed
+    service:
+      pipelines:
+        traces:
+          receivers: [otlp]
+          exporters: [debug]
+        metrics:
+          receivers: [otlp]
+          exporters: [debug]
+        logs:
+          receivers: [otlp]
+          exporters: [debug]
+
+
+Launch the following poentelmetry-collector service:
+
+.. code-block:: shell
+
+    $ docker run -p 4317:4317 \
+        -v $PWD/otel-collector-config.yaml:/etc/otel-collector-config.yaml \
+        otel/opentelemetry-collector:latest \
+        --config=/etc/otel-collector-config.yaml
+
 Credits
 -------
 
