@@ -191,7 +191,7 @@ class HIPSServer(Server):
         if hips_source and self._get_hips_md(layer_name).get('passthrough_properties', True):
             return hips_source.load_properties()
 
-        from datetime import datetime
+        import datetime
 
         hips_md = self._get_hips_md(layer_name)
 
@@ -201,7 +201,7 @@ class HIPSServer(Server):
             'obs_title': hips_md.get('obs_title', self.layers[layer_name].title),
             'dataproduct_type': 'image',
             'hips_version': '1.4',
-            'hips_release_date': hips_md.get('hips_release_date', datetime.utcnow().strftime('%Y-%m-%dT%H:%M:%SZ')),
+            'hips_release_date': hips_md.get('hips_release_date', datetime.datetime.now(datetime.timezone.utc).strftime('%Y-%m-%dT%H:%M:%SZ')),
             'hips_status': hips_md.get('hips_status', 'public master clonableOnce'),
             'hips_tile_format' : self._get_hips_tile_format(layer_name),
             'hips_order': hips_md.get('hips_order', '5'),
@@ -461,7 +461,7 @@ class HIPSServer(Server):
             return hips_source.load_hips_tile(norder, npix)
 
         request_srs = None
-        for layer, layer_obj_iter in self.tile_layers.iteritems():
+        for layer, layer_obj_iter in self.tile_layers.items():
             if layer_obj_iter.name == layer_name:
                 request_srs = layer_obj_iter.grid.srs
                 break

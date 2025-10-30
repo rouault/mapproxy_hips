@@ -39,13 +39,13 @@ def hp_subpixel_to_axis_coord(order, subpixel):
         The y axis goes from the bottom point of the diamont to the north-west direction
         At order 1, there are 4 subpixels : 0, 1, 2, 3
               +
-             / \
+             / \\
             + 3 +
-           / \ / \
+           / \\/ \\
           + 2 + 1 +
-           \ / \ /
+           \\/ \\/
             + 0 +
-             \ /
+             \\/
               +
         Their corresponding axis coordinates are:
             0 -> x,y=0,0
