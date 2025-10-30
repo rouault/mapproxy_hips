@@ -10,6 +10,8 @@ install_requires = [
     'numpy',
     'healpy',
     'numba',
+    'opentelemetry-exporter-otlp',
+    'opentelemetry-sdk',
 ]
 
 readme = open('README.rst', encoding="utf-8").read()

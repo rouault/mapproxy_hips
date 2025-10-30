@@ -3,3 +3,5 @@ pyproj
 numpy
 healpy
 numba
+opentelemetry-exporter-otlp
+opentelemetry-sdk

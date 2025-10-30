@@ -16,9 +16,35 @@ from mapproxy_hips.service.demo_extra import extra_demo_server_handler, extra_de
 
 import inspect
 import logging
-log = logging.getLogger('mapproxy.hips')
+import os
 
 already_executed = False
+
+log = logging.getLogger('mapproxy.hips')
+log.setLevel(logging.INFO)
+
+def register_opentelemetry():
+    from opentelemetry.sdk._logs import LoggerProvider, LoggingHandler
+    from opentelemetry.sdk._logs.export import BatchLogRecordProcessor
+    from opentelemetry.exporter.otlp.proto.http._log_exporter import OTLPLogExporter
+    import sys
+
+    class SafeLoggingHandler(LoggingHandler):
+        def flush(self):
+            if getattr(sys, "is_finalizing", lambda: False)():
+                return
+            try:
+                super().flush()
+            except Exception:
+                pass
+
+    log_exporter = OTLPLogExporter()
+    log_provider = LoggerProvider()
+    log_provider.add_log_record_processor(BatchLogRecordProcessor(log_exporter))
+    otel_handler = SafeLoggingHandler(logger_provider=log_provider)
+    log.addHandler(otel_handler)
+    return otel_handler
+
 
 def plugin_entrypoint():
     """ Entry point of the plugin, called by mapproxy """
@@ -28,7 +54,15 @@ def plugin_entrypoint():
         return
     already_executed = True
 
+    otel_handler = None
+    if "OTEL_EXPORTER_OTLP_ENDPOINT" in os.environ:
+        if "OTEL_SERVICE_NAME" not in os.environ:
+            os.environ["OTEL_SERVICE_NAME"] = "mapproxy.hips"
+        otel_handler = register_opentelemetry()
+
     log.info('execute plugin_entrypoint')
+    if otel_handler:
+        otel_handler.flush()
 
     register_source_configuration('hips', HIPSSourceConfiguration,
                                   'hips', hips_source_yaml_spec())
