@@ -9,11 +9,12 @@ from mapproxy.script.util import register_command
 from mapproxy.service.demo import register_extra_demo_server_handler, register_extra_demo_substitution_handler
 
 from mapproxy_hips.config.hips_source_configuration import HIPSSourceConfiguration, hips_source_yaml_spec
-from mapproxy_hips.config.hips_service_configuration import hips_service_creator, hips_service_yaml_spec
+from mapproxy_hips.config.hips_service_configuration import hips_service_creator, hips_service_yaml_spec, hips_service_json_schema
 from mapproxy_hips.script.hipsallsky import hipsallsky_command
 from mapproxy_hips.script.hipsseed import hipsseed_command
 from mapproxy_hips.service.demo_extra import extra_demo_server_handler, extra_demo_substitution_handler
 
+import inspect
 import logging
 log = logging.getLogger('mapproxy.hips')
 
@@ -32,8 +33,16 @@ def plugin_entrypoint():
     register_source_configuration('hips', HIPSSourceConfiguration,
                                   'hips', hips_source_yaml_spec())
 
-    register_service_configuration('hips', hips_service_creator,
-                                   'hips', hips_service_yaml_spec())
+    sig = inspect.signature(register_service_configuration).parameters
+    if 'schema_service' in sig:
+        # mapproxy > 6.0.1
+        register_service_configuration('hips', hips_service_creator,
+                                       'hips', hips_service_yaml_spec(),
+                                       hips_service_json_schema())
+    else:
+        register_service_configuration('hips', hips_service_creator,
+                                       'hips', hips_service_yaml_spec())
+
     # Add a 'hips' subcategory to layer spec to be able to define hips service
     # specific layer metadata
     add_subcategory_to_layer_md('hips', anything())

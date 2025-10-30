@@ -26,18 +26,21 @@ services:
     md:
       title: MapProxy WMS Proxy
       abstract: This is a minimal MapProxy example.
+  ogcapi:
+    map_srs: ['EPSG:4326', 'CRS:84', 'EPSG:32661']
+    default_dataset_layers: [mars_hips]
 
 layers:
   - name: mars_hips
-    title: MARS
+    title: MARS (cache)
     sources: [mars_hips_cache]
 
   - name: mars_hips_north_polar
-    title: MARS
+    title: MARS (north polar)
     sources: [mars_hips_cache_north_polar]
 
   - name: mars_hips_direct
-    title: MARS
+    title: MARS (direct)
     sources: [mars_hips_source]
 
 caches:

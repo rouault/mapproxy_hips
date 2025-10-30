@@ -20,5 +20,22 @@ def hips_service_creator(serviceConfiguration, conf):
 def hips_service_yaml_spec():
     spec = {
         'resampling_method': str(),
+        'populate_cache': bool()
+    }
+    return spec
+
+def hips_service_json_schema():
+    spec = {
+        "type": "object",
+        "properties": {
+            "resampling_method": {
+                "type": "string",
+                "enum": ["nearest_neighbour", "bilinear", "bicubic"]
+            },
+            "populate_cache": {
+                "type": "boolean"
+            }
+        },
+        "additionalProperties": False
     }
     return spec
