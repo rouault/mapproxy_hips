@@ -161,7 +161,7 @@ Given a ``otel-collector-config.yaml`` file containing
           exporters: [debug]
 
 
-Launch the following poentelmetry-collector service:
+Launch the following opentelemetry-collector service:
 
 .. code-block:: shell
 
