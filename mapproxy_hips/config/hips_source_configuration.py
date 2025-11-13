@@ -4,7 +4,7 @@
 
 import os
 
-from mapproxy.config.loader import SourceConfiguration
+from mapproxy.config.configuration.source import SourceConfiguration
 from mapproxy.config.spec import image_opts
 from mapproxy.util.ext.dictspec.spec import required
 from mapproxy.util.py import memoize

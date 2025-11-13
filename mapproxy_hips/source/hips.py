@@ -5,7 +5,8 @@
 from PIL import Image
 from mapproxy.client.http import HTTPClientError
 from mapproxy.image import ImageSource
-from mapproxy.layer import DefaultMapExtent, MapLayer
+from mapproxy.extent import DefaultMapExtent
+from mapproxy.layer import MapLayer
 from mapproxy.srs import SRS
 from mapproxy_hips.util import hips
 from mapproxy_hips.util.resampling import bilinear_resample, bicubic_resample, has_numba

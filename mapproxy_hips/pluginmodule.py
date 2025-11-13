@@ -2,7 +2,8 @@
 # Copyright (C) 2021-2022 Spatialys
 # Funded by Centre National d'Etudes Spatiales (CNES): https://cnes.fr
 
-from mapproxy.config.loader import register_source_configuration, register_service_configuration
+from mapproxy.config.configuration.source import register_source_configuration
+from mapproxy.config.configuration.service import register_service_configuration
 from mapproxy.config.spec import add_subcategory_to_layer_md
 from mapproxy.util.ext.dictspec.spec import anything
 from mapproxy.script.util import register_command
