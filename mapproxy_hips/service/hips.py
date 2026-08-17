@@ -9,13 +9,13 @@ from PIL import Image
 from mapproxy.cache.base import TileLocker
 from mapproxy.cache.file import FileCache
 from mapproxy.cache.tile import Tile
-from mapproxy.layer import MapQuery
+from mapproxy.query import MapQuery
 from mapproxy.request.wms import WMSMapRequest, WMSMapRequestParams
 from mapproxy.response import Response
 from mapproxy.service.base import Server
 from mapproxy.service.wms import LayerRenderer
 from mapproxy.srs import SRS
-from mapproxy.image import ImageSource, img_to_buf
+from mapproxy.image import ImageResult, img_to_buf
 from mapproxy.image.merge import LayerMerger
 from mapproxy.image.opts import ImageOptions
 from mapproxy_hips.util.hips import hp_subpixel_to_axis_coord, hp_boundaries_lonlat, healpix_resolution_degree
@@ -109,13 +109,13 @@ def _seed_task(arg):
     if has_png:
         with locker_png.lock(tile_png):
             result_buf = img_to_buf(img, img_opts_png)
-            tile_png.source = ImageSource(result_buf)
+            tile_png.source = ImageResult(result_buf)
             cache_png.store_tile(tile_png)
 
     if has_jpeg:
         with locker_jpg.lock(tile_jpg):
             result_buf = img_to_buf(img, img_opts_jpg)
-            tile_jpg.source = ImageSource(result_buf)
+            tile_jpg.source = ImageResult(result_buf)
             cache_jpg.store_tile(tile_jpg)
 
 
@@ -332,7 +332,7 @@ class HIPSServer(Server):
         with locker.lock(tile):
             if cache.is_cached(tile):
                 if cache.load_tile(tile):
-                    img = tile.source_image()
+                    img = tile.image_result_image()
                     if img:
                         resp = Response(img_to_buf(img, img_opts), content_type=img_opts.format.mime_type)
                         return resp
@@ -349,7 +349,7 @@ class HIPSServer(Server):
         # And cache it if that's allowed in the service configuration
         if self.populate_cache:
             with locker.lock(tile):
-                tile.source = ImageSource(result_buf)
+                tile.image_result = ImageResult(result_buf)
                 cache.store_tile(tile)
 
         resp = Response(result_buf, content_type=img_opts.format.mime_type)
@@ -472,7 +472,7 @@ class HIPSServer(Server):
             if isinstance(layer, WMSLayer):
                 for source_layer in layer.map_layers:
                     from mapproxy.source.wms import WMSSource
-                    if isinstance(source_layer, WMSSource):
+                    if isinstance(source_layer, WMSSource) and source_layer.supported_srs:
                         for srs in source_layer.supported_srs:
                             if hasattr(srs, 'get_geographic_srs'):
                                 request_srs = srs.get_geographic_srs()

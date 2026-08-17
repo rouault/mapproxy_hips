@@ -4,9 +4,9 @@
 
 from PIL import Image
 from mapproxy.client.http import HTTPClientError
-from mapproxy.image import ImageSource
+from mapproxy.image import ImageResult
 from mapproxy.extent import DefaultMapExtent
-from mapproxy.layer import MapLayer
+from mapproxy.layer.map_layer import MapLayer
 from mapproxy.srs import SRS
 from mapproxy_hips.util import hips
 from mapproxy_hips.util.resampling import bilinear_resample, bicubic_resample, has_numba
@@ -139,7 +139,7 @@ class HIPSSource(MapLayer):
             with self.locker.lock(tile):
                 if self.cache.is_cached(tile):
                     if self.cache.load_tile(tile):
-                        img = tile.source_image()
+                        img = tile.image_result_image()
                         if img:
                             cached_tile = True
                             return np.array(img)
@@ -153,7 +153,7 @@ class HIPSSource(MapLayer):
                 img = self.http_client.open_image(url)
                 if self.cache:
                     with self.locker.lock(tile):
-                        tile.source = img
+                        tile.image_result = img
                         self.cache.store_tile(tile)
                 return np.array(img.as_image())
             except HTTPClientError as e:
@@ -374,4 +374,4 @@ class HIPSSource(MapLayer):
                      self.resample_func, src_to_tgt_scaling)
         log_hips.info('Processing time: %.02f s', time.time() - start)
 
-        return ImageSource(Image.fromarray(result_ar, mode='RGBA'))
+        return ImageResult(Image.fromarray(result_ar, mode='RGBA'))

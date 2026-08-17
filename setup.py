@@ -5,7 +5,7 @@
 from setuptools import setup, find_packages
 
 install_requires = [
-    'mapproxy>=6.0.1',
+    'mapproxy>=7.0.0',
     'pyproj',
     'numpy',
     'healpy',
@@ -37,7 +37,6 @@ setup(
     # custom PyPI classifier for mapproxy plugins
     classifiers=[
         "Operating System :: OS Independent",
-        "Programming Language :: Python :: 3.9",
         "Programming Language :: Python :: 3.10",
         "Programming Language :: Python :: 3.11",
         "Programming Language :: Python :: 3.12",
