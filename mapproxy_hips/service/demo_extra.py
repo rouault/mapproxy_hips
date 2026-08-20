@@ -64,7 +64,7 @@ def _hips_info(req, layer_name):
         value = properties['hips_tile_format']
         for x in value.split(' '):
             if x in ('jpeg', 'png'):
-                tile_format = 'png' if x == 'png' else 'jpg'
+                tile_format = x
                 break
         if tile_format is None:
             return Exception(f'hips_tile_format = {value} does not contain jpeg or png')
